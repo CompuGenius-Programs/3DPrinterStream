@@ -1,0 +1,3 @@
+bambu-connect
+obsws_python
+python-dotenv
