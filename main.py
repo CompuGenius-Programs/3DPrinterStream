@@ -60,17 +60,22 @@ def custom_callback(msg: PrinterStatus):
 
 
 def on_watch_client_connect():
-    print("WatchClient connected, Waiting for connection...")
-    time.sleep(1)
+    print("Connected to Bambu...")
     bambu_client.dump_info()
 
 
-bambu_client = BambuClient(hostname, access_code, serial)
-bambu_client.start_watch_client(custom_callback, on_watch_client_connect)
-
-try:
-    while True:
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("Streaming stopped by user.")
-    bambu_client.stop_watch_client()
+bambu_client = None
+while True:
+    try:
+        if bambu_client is None:
+            bambu_client = BambuClient(hostname, access_code, serial)
+            time.sleep(1)
+            bambu_client.start_watch_client(custom_callback, on_watch_client_connect)
+        else:
+            test_client = BambuClient(hostname, access_code, serial)
+    except Exception as e:
+        print(e)
+        print("Connection failed. Retrying...")
+        bambu_client = None
+        time.sleep(60)
+    time.sleep(1)
